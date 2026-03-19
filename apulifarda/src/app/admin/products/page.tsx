@@ -1,18 +1,27 @@
-// src/app/admin/products/page.tsx
 import { createClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
+
+// Importa as tuas Server Actions
 import { addProduct, deleteProduct } from '@/actions/product.actions'
 
 export default async function AdminProductsPage() {
   const supabase = await createClient()
-
-  // 1. SEGURANÇA (Verifica se é admin)
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.email !== 'teu-email@apulifarda.pt') {
+  
+  if (!user) {
     redirect('/login')
   }
 
-  // 2. BUSCAR DADOS (O "Model" da leitura)
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (profile?.role !== 'admin') {
+    redirect('/catalog')
+  }
+
   const { data: products } = await supabase
     .from('products')
     .select('*, categories(name)')
@@ -34,7 +43,6 @@ export default async function AdminProductsPage() {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h2 className="text-xl font-semibold mb-6 text-blue-900">Add New Product</h2>
           
-          {/* O form chama a função que importámos do outro ficheiro! */}
           <form action={addProduct} className="space-y-6">
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -64,6 +72,7 @@ export default async function AdminProductsPage() {
               </div>
             </div>
 
+            {/* AQUI ESTAVA O TEU ERRO DAS DIVS: Agora está arranjado! */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Sizes</label>
@@ -74,8 +83,8 @@ export default async function AdminProductsPage() {
                 <input type="text" name="available_colors" className="w-full px-4 py-2 border rounded-md text-gray-900" placeholder="White, Navy" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                <input type="url" name="image_url" className="w-full px-4 py-2 border rounded-md text-gray-900" />
+                <label className="block text-sm font-medium text-gray-700 mb-1">Foto da Bata</label>
+                <input type="file" name="image" accept="image/*" required className="w-full px-4 py-2 border rounded-md text-gray-900 bg-white" />
               </div>
             </div>
 
@@ -121,7 +130,6 @@ export default async function AdminProductsPage() {
                     }
                   </td>
                   <td className="p-4 text-right">
-                    {/* O form chama a função de delete que importámos! */}
                     <form action={deleteProduct}>
                       <input type="hidden" name="id" value={product.id} />
                       <button type="submit" className="text-red-600 hover:text-red-800 font-semibold text-sm hover:underline">

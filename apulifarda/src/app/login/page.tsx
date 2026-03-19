@@ -17,17 +17,31 @@ export default function LoginPage() {
         setLoading(true);
         setError(null);
 
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
             email,
             password,
-        })   
+        })
 
-        if (error) {
-            setError(error.message);
-            setLoading(false);
+        if(authError) {
+          setError(authError.message)
+          setLoading(false)
+          return
+        }
+
+        if(authData.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', authData.user.id)
+            .single()
+
+        if(profile?.role === 'admin') {
+          router.push('/admin/products')
         } else {
-            router.push("/");
-            router.refresh();
+          router.push('/catalog')
+        }
+        
+        router.refresh();
         }
     }
 
