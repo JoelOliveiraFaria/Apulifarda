@@ -20,7 +20,7 @@ export default function LoginPage() {
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
-        })
+        })   
 
         if (error) {
             setError(error.message);
@@ -32,7 +32,7 @@ export default function LoginPage() {
     }
 
     return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <main className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full bg-white rounded-xl shadow-md p-8 border border-gray-100">
         
         <div className="text-center mb-8">
@@ -54,7 +54,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+              className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition"
               placeholder="you@example.com"
             />
           </div>
@@ -66,7 +66,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+              className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition"
               placeholder="••••••••"
             />
           </div>
